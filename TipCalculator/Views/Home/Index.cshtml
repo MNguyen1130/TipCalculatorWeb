@@ -1,0 +1,109 @@
+﻿@{
+}
+
+<script src="~/Scripts/placeholdem.js"></script>
+
+<div class="calculator">
+    <div class="row">
+        <div class="col-xs-2 col-sm-offset-2 col-sm-2 col-md-offset-2 col-lg-1">
+            <p class="form-control">Bill:</p>
+        </div>
+        <div class="col-xs-10 col-sm-6 col-lg-7">
+            <div class="input-group">
+                <span class="input-group-addon">$</span>
+                <input id="Bill" class="form-control" type="number" min="0.01" step=".01" placeholder="Numbers only!" required />
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-xs-2 col-sm-offset-2 col-sm-2 col-md-offset-2 col-lg-1">
+            <p class="form-control" id="TipPercentLabel">15%</p>
+        </div>
+        <div class="col-xs-10 col-sm-6 col-lg-7">
+            <input id="TipPercent" data-slider-id='tippercentslider' type="text" data-slider-min="0" data-slider-max="30" data-slider-step="1" data-slider-value="15" />
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-xs-2 col-sm-offset-2 col-sm-2 col-md-offset-2 col-lg-1">
+            <p class="form-control">Tip:</p>
+        </div>
+        <div class="col-xs-10 col-sm-6 col-lg-7">
+            <div class="input-group">
+                <span class="input-group-addon">$</span>
+                <input id="Tip" class="form-control" type="number" readonly value=0.00 />
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-xs-2 col-sm-offset-2 col-sm-2 col-md-offset-2 col-lg-1">
+            <p class="form-control">Total:</p>
+        </div>
+        <div class="col-xs-10 col-sm-6 col-lg-7">
+            <div class="input-group">
+                <span class="input-group-addon">$</span>
+                <input id="Total" class="form-control" type="number" readonly value="0.00" />
+            </div>
+        </div>
+    </div>
+</div>
+
+<link rel="stylesheet" href="~/Content/bootstrap-slider.css" />
+<script src="~/Scripts/bootstrap-slider.js"></script>
+<script type="text/javascript">
+    $('#TipPercent').slider({
+        tooltip: 'hide'
+    });
+    $('#TipPercent').on('slide', function (slideEvt) {
+        $('#TipPercentLabel').text(slideEvt.value + '%');
+        calculateTipAndTotal();
+        //var bill = $('#Bill').val();
+        //$('#Tip').val((bill * $('#TipPercent').val() / 100).toFixed(2));
+        //$('#Total').val((parseFloat(bill, 10) + parseFloat($('#Tip').val(), 10)));
+    });
+    $('#TipPercent').change(function () {
+        $('#TipPercentLabel').text($('#TipPercent').val() + '%')
+        calculateTipAndTotal();
+    });
+
+
+    $('#Bill').keyup(function () {
+        var bill = this.value;
+
+        if (!bill.match(/[0-9]/)) {
+            this.value = this.value.replace(/[^0-9]/g, '');
+            $('#Tip').val("0.00");
+            $('#Total').val("0.00");
+        }
+        else if(bill > 10000) {
+            this.value = 10000;
+            bill = 10000;
+            calculateTipAndTotal();
+        }
+        else {
+            calculateTipAndTotal();
+            //$('#Tip').val((bill * $('#TipPercent').val() / 100).toFixed(2));
+            //$('#Total').val((parseFloat(bill, 10) + parseFloat($('#Tip').val(), 10)));
+        }
+    });
+
+    function calculateTipAndTotal() {
+        var bill = parseFloat($('#Bill').val());
+        if (bill > 0)
+        {
+            var tipPercent = parseFloat($('#TipPercent').val() / 100);
+            var tip = bill * tipPercent;
+            var total = (bill + tip).toFixed(2);
+            $('#Tip').val(tip.toFixed(2));
+            $('#Total').val(total);
+        }
+        else
+        {
+            $('#Tip').val("0.00");
+            $('#Total').val("0.00");
+        }
+
+
+    }
+
+    Placeholdem(document.querySelectorAll('[placeholder'));
+</script>
